@@ -159,7 +159,8 @@ body.t-white::before{background:repeating-linear-gradient(0deg,transparent,trans
   flex-direction:column;
   height:100%;
   min-height:0;
-  overflow:hidden;
+  /* clip не створює scroll-container — не перехоплює touch у дочірніх елементів */
+  overflow:clip;
 }
 
 /* верхня частина — presets + ring + pips */
@@ -220,7 +221,9 @@ body.t-white::before{background:repeating-linear-gradient(0deg,transparent,trans
 .sliders{
   flex:0 1 auto;
   min-height:0;
-  overflow-y:auto;
+  overflow-y:scroll;
+  touch-action:pan-y;
+  overscroll-behavior:contain;
   padding:4px 16px 8px;
   display:flex;flex-direction:column;gap:4px;
   -webkit-overflow-scrolling:touch;
@@ -495,7 +498,7 @@ body.light .btn-go.paused{color:#8a6200;border-color:#8a6200;}
     grid-template-areas:unset !important;
   }
   /* скидаємо display:contents назад до flex */
-  .middle{ display:flex !important; flex-direction:column !important; overflow:hidden !important; }
+  .middle{ display:flex !important; flex-direction:column !important; overflow:clip !important; }
   /* показуємо presets назад */
   .presets{ display:flex !important; }
   /* ring — звичайна колонка */
