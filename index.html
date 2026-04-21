@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CORE·SYS">
+<meta name="theme-color" content="#080808">
+<title>CORE·SYS</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23080808'/><text y='.9em' font-size='80' x='10'>💪</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────────────── */
+:root{
+  --org:#ff6a00; --org-glow:rgba(255,106,0,.4);
+  --blue:#00c8ff; --blue-glow:rgba(0,200,255,.35);
+  --bg:#080808; --bg2:#0e0e0e; --bg3:#141414; --line:#1e1e1e;
+  --txt:#fff; --txt2:#888; --txt3:#444;
+  --si:env(safe-area-inset-top,0px);
+  --sb:env(safe-area-inset-bottom,0px);
+  --sl:env(safe-area-inset-left,0px);
+  --sr:env(safe-area-inset-right,0px);
+}
+
+/* 🔶 FIRE — default orange (already :root) */
+
+/* 💚 MATRIX — green on black */
+body.t-matrix{
+  --org:#00ff41; --org-glow:rgba(0,255,65,.4);
+  --blue:#00c8ff; --blue-glow:rgba(0,200,255,.3);
+  --bg:#020b02; --bg2:#061006; --bg3:#0a180a; --line:#0d2b0d;
+  --txt:#ccffcc; --txt2:#5a8a5a; --txt3:#2a4a2a;
+}
+
+/* 💜 NEON VIOLET */
+body.t-violet{
+  --org:#bf5fff; --org-glow:rgba(191,95,255,.45);
+  --blue:#ff5fc8; --blue-glow:rgba(255,95,200,.35);
+  --bg:#08020e; --bg2:#0f0518; --bg3:#160822; --line:#220d30;
+  --txt:#f0d8ff; --txt2:#7a5a8a; --txt3:#3a1a4a;
+}
+
+/* 🩷 CYBER PINK */
+body.t-pink{
+  --org:#ff2d78; --org-glow:rgba(255,45,120,.45);
+  --blue:#ff9f1c; --blue-glow:rgba(255,159,28,.35);
+  --bg:#0a0008; --bg2:#140010; --bg3:#1c0018; --line:#2a0022;
+  --txt:#ffe8f4; --txt2:#8a4a6a; --txt3:#3a1a2a;
+}
+
+/* 🟡 GOLD PREMIUM */
+body.t-gold{
+  --org:#f0c040; --org-glow:rgba(240,192,64,.4);
+  --blue:#e8884a; --blue-glow:rgba(232,136,74,.3);
+  --bg:#09070000; --bg2:#100e00; --bg3:#181400; --line:#251e00;
+  --txt:#fff8e0; --txt2:#887040; --txt3:#443818;
+}
+body.t-gold{--bg:#090700;}
+
+/* ⚪ MINIMAL WHITE */
+body.t-white{
+  --org:#111111; --org-glow:rgba(0,0,0,.15);
+  --blue:#555555; --blue-glow:rgba(80,80,80,.2);
+  --bg:#f8f8f6; --bg2:#ffffff; --bg3:#eeeeec; --line:#ddddd8;
+  --txt:#111; --txt2:#666; --txt3:#aaa;
+}
+body.t-white .btn-go.running{color:#fff;}
+body.t-white .btn-go.resting{color:#fff;}
+
+/* ── RESET ────────────────────────────────────────────────  */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;background:var(--bg);transition:background .3s;}
+
+body{
+  font-family:'Rajdhani',sans-serif;
+  background:var(--bg); color:var(--txt);
+  height:100dvh;
+  padding:var(--si) var(--sr) var(--sb) var(--sl);
+  overflow:hidden;
+  transition:background .3s, color .3s;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  grid-template-columns:1fr;
+}
+/* middle row має розтягуватись */
+.middle{ align-self:stretch; }
+
+/* flash — поза grid flow */
+.flash{
+  position:fixed;inset:0;
+  background:var(--org);
+  opacity:0;pointer-events:none;
+  z-index:180;
+  transition:opacity .07s;
+  /* виключаємо з grid */
+  grid-row:1;grid-column:1;
+  display:none;
+}
+.flash.go{display:block;opacity:.08;}
+
+/* scanlines */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:200;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,106,0,.012) 3px,rgba(255,106,0,.012) 4px);
+}
+body.t-matrix::before{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,65,.015) 3px,rgba(0,255,65,.015) 4px);}
+body.t-violet::before{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(191,95,255,.015) 3px,rgba(191,95,255,.015) 4px);}
+body.t-pink::before{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,45,120,.015) 3px,rgba(255,45,120,.015) 4px);}
+body.t-gold::before{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(240,192,64,.015) 3px,rgba(240,192,64,.015) 4px);}
+body.t-white::before{background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.008) 3px,rgba(0,0,0,.008) 4px);}
+
+/* ── HUD CORNERS — через псевдоелементи nav і btm ─────── */
+/* видалено .hud-corner — більше не потрібні */
+
+.nav{
+  display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:0 20px;
+  height:52px;
+  border-bottom:1px solid var(--line);
+  position:relative;
+  flex-shrink:0;
+}
+.theme-picker{justify-self:end;}
+/* верхні кути */
+.nav::before,.nav::after{
+  content:'';position:absolute;width:18px;height:18px;top:50%;transform:translateY(-50%);pointer-events:none;
+}
+.nav::before{left:6px;border-top:2px solid var(--org);border-left:2px solid var(--org);top:8px;transform:none;}
+.nav::after{right:6px;border-top:2px solid var(--org);border-right:2px solid var(--org);top:8px;transform:none;}
+
+/* нижні кути */
+.btm{padding:8px 16px 10px;flex-shrink:0;position:relative;}
+.btm::before,.btm::after{
+  content:'';position:absolute;width:18px;height:18px;bottom:6px;pointer-events:none;
+}
+.btm::before{left:6px;border-bottom:2px solid var(--org);border-left:2px solid var(--org);}
+.btm::after{right:6px;border-bottom:2px solid var(--org);border-right:2px solid var(--org);}
+.brand{font-family:'Orbitron',sans-serif;font-size:clamp(11px,3vw,14px);font-weight:700;color:var(--org);letter-spacing:4px;}
+.online{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--org);animation:pulse 2s infinite;flex-shrink:0;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 var(--org-glow)}50%{opacity:.5;box-shadow:0 0 0 4px transparent}}
+.theme-picker{display:flex;gap:6px;align-items:center;}
+.tc{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid transparent;
+  cursor:pointer;padding:0;
+  transition:transform .15s, border-color .15s;
+  flex-shrink:0;
+}
+.tc:active{transform:scale(.85);}
+.tc.active{border-color:var(--txt);transform:scale(1.15);}
+
+/* ── MIDDLE — holds presets + ring + sliders ──────────────  */
+.middle{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+}
+
+/* верхня частина — presets + ring + pips */
+.top-section{
+  display:flex;flex-direction:column;align-items:center;
+  flex:1;min-height:40vh;
+}
+
+/* ── PRESETS ──────────────────────────────────────────────  */
+.presets{
+  display:flex;
+  margin:8px 16px 4px;
+  border:1px solid var(--line);border-radius:4px;overflow:hidden;
+  flex-shrink:0;
+}
+.ps{flex:1;padding:7px 12px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;border:none;background:transparent;color:var(--txt3);cursor:pointer;border-right:1px solid var(--line);transition:all .18s;}
+.ps:last-child{border-right:none;}
+.ps.on{background:var(--org);color:#000;}
+.ps:active:not(.on){background:var(--bg3);color:var(--org);}
+
+/* ── RING (always same size, doesn't grow) ────────────────  */
+.ring-area{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:8px 0 6px;flex:1;min-height:0;
+  width:100%;
+  container-type:size;
+}
+.ring-wrap{
+  position:relative;
+  /* заповнює доступну висоту ring-area, не виходить за ширину */
+  width:min(calc(100cqh - 14px), calc(100cqw - 40px));
+  height:min(calc(100cqh - 14px), calc(100cqw - 40px));
+  /* inline-size дає нащадкам cqw без циклічної залежності розміру */
+  container-type:inline-size;
+}
+.ring-wrap svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8%;}
+.phase-eyebrow{font-size:clamp(9px,3.5cqw,18px);font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--org);margin-bottom:3px;transition:color .3s;}
+.time-big{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(36px,28cqw,200px);
+  font-weight:900;color:var(--txt);line-height:1;
+  letter-spacing:clamp(-1px, -0.5cqw, 0px);
+  transition:color .3s;
+  max-width:100%;
+  white-space:nowrap;
+}
+.rnd-sub{font-size:clamp(10px,3cqw,18px);color:var(--txt3);letter-spacing:3px;margin-top:5px;font-weight:500;}
+
+/* PIPS */
+.pips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;justify-content:center;max-width:min(90vw,320px);padding:0 16px;}
+.pip{width:10px;height:10px;transform:rotate(45deg);border:1px solid var(--line);background:transparent;transition:all .25s;flex-shrink:0;}
+.pip.done{background:rgba(255,106,0,.3);border-color:var(--org);}
+.pip.cur{background:var(--org);border-color:var(--org);box-shadow:0 0 8px var(--org-glow);}
+.pip.rest-cur{background:var(--blue);border-color:var(--blue);box-shadow:0 0 8px var(--blue-glow);}
+
+/* ── SLIDERS ──────────────────────────────────────────────  */
+.sliders{
+  flex:0 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  padding:4px 16px 8px;
+  display:flex;flex-direction:column;gap:4px;
+  -webkit-overflow-scrolling:touch;
+}
+.sl-row{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:8px 12px 18px;position:relative;flex-shrink:0;}
+.sl-row::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
+.sl-row.w::before{background:var(--org);}
+.sl-row.r::before{background:var(--blue);}
+.sl-row.n::before{background:var(--txt3);}
+.sl-row.cd::before{background:#666;}
+.sl-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.sl-label{font-size:10px;font-weight:600;letter-spacing:2px;color:var(--txt3);text-transform:uppercase;}
+.sl-val{font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;}
+.sl-val.w{color:var(--txt);}
+.sl-val.r{color:var(--blue);}
+.sl-val.n{color:var(--org);}
+.sl-val.cd{color:#888;}
+input[type=range]{-webkit-appearance:none;width:100%;height:2px;background:var(--bg3);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range].work-sl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:3px;transform:rotate(45deg);background:var(--org);border:none;box-shadow:0 0 10px var(--org-glow);}
+input[type=range].rest-sl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:3px;transform:rotate(45deg);background:var(--blue);border:none;box-shadow:0 0 10px var(--blue-glow);}
+input[type=range].rnd-sl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:3px;transform:rotate(45deg);background:#555;border:none;}
+input[type=range].cd-sl::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:3px;transform:rotate(45deg);background:#777;border:none;}
+
+/* ── ACTIVE OVERLAY ──────────────────────────────────────── */
+/* Covers the entire .middle (presets+ring+sliders) with a
+   centred big ring — layout stays 100% untouched below */
+.active-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:var(--bg);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .35s ease;
+  z-index:10;
+}
+.active-overlay.show{opacity:1;pointer-events:all;}
+
+.big-ring-wrap{
+  position:relative;
+  width:clamp(260px,65vmin,360px);
+  height:clamp(260px,65vmin,360px);
+}
+.big-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);}
+.big-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.big-eyebrow{font-size:clamp(10px,2.5vmin,13px);font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--org);margin-bottom:6px;transition:color .3s;}
+.big-time{
+  font-family:'Orbitron',sans-serif;
+  font-size:clamp(72px,18vmin,110px);
+  font-weight:900;color:var(--txt);line-height:1;
+  letter-spacing:clamp(-1px,-0.3vmin,0px);
+  transition:color .3s;
+}
+.big-sub{font-size:clamp(11px,2.5vmin,14px);color:var(--txt3);letter-spacing:3px;margin-top:8px;font-weight:500;}
+.big-pips{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap;justify-content:center;max-width:min(85vw,340px);padding:0 16px;}
+.big-pips .pip{width:12px;height:12px;}
+
+/* ── BOTTOM BAR ───────────────────────────────────────────  */
+.btm{padding:8px 16px 10px;flex-shrink:0;}
+.btn-go{
+  width:100%;height:62px;
+  border:1.5px solid var(--org);background:transparent;color:var(--org);
+  font-family:'Orbitron',sans-serif;font-size:clamp(12px,3vw,14px);font-weight:700;letter-spacing:5px;
+  cursor:pointer;border-radius:4px;
+  transition:background .2s,color .2s,border-color .2s,opacity .15s;
+}
+.btn-go.running{background:var(--org);color:#000;border-color:var(--org);}
+.btn-go.resting{background:var(--blue);color:#000;border-color:var(--blue);}
+.btn-go.paused{border-color:#ffcc00;color:#ffcc00;}
+.btn-go.counting{opacity:.3;pointer-events:none;}
+body.light .btn-go{color:var(--org);border-color:var(--org);}
+body.light .btn-go.running{color:#fff;}
+body.light .btn-go.resting{color:#fff;}
+body.light .btn-go.paused{color:#8a6200;border-color:#8a6200;}
+.btn-go:active:not(.counting){opacity:.75;transform:scale(.99);}
+.sub-row{display:flex;gap:8px;margin-top:7px;}
+.btn-sm{flex:1;height:42px;border:1px solid var(--line);background:transparent;font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--txt2);cursor:pointer;border-radius:4px;transition:all .15s;}
+.btn-sm:active{background:var(--bg3);color:var(--txt);border-color:var(--txt3);}
+/* stats — fixed height щоб не стрибало */
+.stats-row{display:flex;justify-content:space-around;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);min-height:44px;align-items:center;}
+.stat{text-align:center;min-width:56px;}
+.stat-v{font-family:'Orbitron',sans-serif;font-size:clamp(14px,3.5vw,17px);font-weight:700;color:var(--txt);}
+.stat-l{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:2px;}
+
+/* ── COMPLETE SCREEN ──────────────────────────────────────  */
+.complete-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity .45s;}
+.complete-overlay.show{opacity:1;pointer-events:all;}
+.complete-title{font-family:'Orbitron',sans-serif;font-size:clamp(24px,6vw,34px);font-weight:900;color:var(--org);letter-spacing:6px;text-shadow:0 0 30px var(--org-glow);margin-bottom:6px;}
+.complete-sub{font-size:12px;color:var(--txt3);letter-spacing:3px;margin-bottom:32px;}
+.complete-stats{display:flex;gap:clamp(24px,8vw,50px);margin-bottom:32px;}
+.cs{text-align:center;}
+.cs-v{font-family:'Orbitron',sans-serif;font-size:clamp(22px,6vw,28px);font-weight:700;color:var(--txt);}
+.cs-l{font-size:9px;color:var(--txt3);letter-spacing:2px;margin-top:4px;}
+.btn-again{padding:14px 36px;border:1.5px solid var(--org);background:transparent;color:var(--org);font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;letter-spacing:4px;cursor:pointer;border-radius:4px;}
+.btn-again:active{background:var(--org);color:#000;}
+
+/* ── ADD TO HOME ──────────────────────────────────────────  */
+.add-banner{
+  position:fixed;
+  bottom:calc(var(--sb) + 68px);
+  left:calc(var(--sl) + 14px);
+  right:calc(var(--sr) + 14px);
+  background:var(--bg3);border:1px solid var(--org);border-radius:8px;
+  padding:11px 13px;display:flex;justify-content:space-between;align-items:center;
+  z-index:400;animation:slideUp .4s ease;
+}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.add-txt{font-size:11px;color:var(--txt2);line-height:1.6;}
+.add-txt strong{color:var(--org);font-weight:600;}
+.add-close{font-size:18px;color:var(--txt3);background:none;border:none;cursor:pointer;padding:4px 8px;}
+
+/* ── LANDSCAPE ────────────────────────────────────────────  */
+@media (orientation:landscape) and (max-height:500px){
+  /* повна ширина в landscape */
+  body{
+    grid-template-rows:auto minmax(0,1fr) auto;
+    max-width:100% !important;
+    border-left:none !important;
+    border-right:none !important;
+  }
+  /* nav висота фіксована глобально */
+  .nav::before,.nav::after{top:4px;}
+
+  /* middle стає горизонтальним */
+  .middle{
+    flex-direction:row;
+    overflow:hidden;
+  }
+
+  /* ліва колонка — фіксована ширина, центруємо вміст вертикально */
+  .top-section{
+    flex:0 0 auto;
+    min-height:0;
+    justify-content:center;
+  }
+
+  /* ліва колонка — тільки таймер без кільця */
+  .ring-area{
+    flex:0 0 auto;
+    width:42vw;
+    padding:0;
+    justify-content:center;
+    border-right:1px solid var(--line);
+    align-items:center;
+  }
+  /* центруємо весь вміст ring-center */
+  .ring-center{
+    position:static;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding:8px 0;
+  }
+
+  /* ховаємо SVG кільце — залишаємо тільки текст */
+  .ring-wrap svg{ display:none; }
+  .ring-wrap{
+    width:auto !important;
+    height:auto !important;
+    position:static;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    container-type:normal;
+  }
+  .ring-center{
+    position:static;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:8px 0;
+  }
+  .time-big{font-size:clamp(54px,14vw,80px) !important;}
+  .phase-eyebrow{font-size:9px;}
+  .rnd-sub{font-size:10px;margin-top:4px;}
+  .pips{margin-top:6px;gap:5px;}
+  .pip{width:9px;height:9px;}
+
+  /* права колонка — слайдери */
+  .presets{display:none;}
+  .sliders{gap:2px;padding:2px 12px 4px;flex:1;min-width:0;}
+  .sl-row{padding:4px 10px 6px;}
+  .sl-head{margin-bottom:5px;}
+
+  /* active overlay в landscape — теж без кільця */
+  .big-ring-wrap svg{display:none;}
+  .big-ring-wrap{
+    width:auto !important;height:auto !important;
+    position:static;
+  }
+  .big-ring-center{position:static;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .big-time{font-size:clamp(72px,18vw,100px) !important;}
+
+  .btm{padding:4px 14px 6px;}
+  .btn-go{height:46px;}
+  .btn-sm{height:34px;}
+  .sub-row{margin-top:5px;}
+  .stats-row{margin-top:5px;padding-top:5px;min-height:36px;}
+  .btm::before,.btm::after{bottom:4px;}
+}
+
+/* ── Desktop ──────────────────────────────────────────────  */
+@media (min-width:1367px){
+  body{
+    max-width:480px;
+    margin:0 auto;
+    border-left:1px solid var(--line);
+    border-right:1px solid var(--line);
+  }
+}
+
+/* ── iPAD portrait ────────────────────────────────────────  */
+@media (min-width:768px) and (orientation:portrait){
+  body{
+    max-width:680px;
+    margin:0 auto;
+    border-left:1px solid var(--line);
+    border-right:1px solid var(--line);
+  }
+  .middle{ justify-content:flex-start; }
+  .brand{font-size:16px;letter-spacing:5px;}
+  .tc{width:22px;height:22px;}
+
+  .presets{margin:6px 24px 4px;}
+  .ps{padding:9px 12px;font-size:12px;}
+
+  .ring-area{padding:6px 0 4px;}
+  /* ring-wrap та шрифти масштабуються через container queries — overrides не потрібні */
+  .pips{margin-top:12px;gap:8px;}
+  .pip{width:14px;height:14px;}
+
+  .sliders{padding:6px 24px 10px;gap:6px;}
+  .sl-row{padding:12px 16px 20px;}
+  .sl-label{font-size:11px;letter-spacing:2.5px;}
+  .sl-val{font-size:18px;}
+  input[type=range].work-sl::-webkit-slider-thumb,
+  input[type=range].rest-sl::-webkit-slider-thumb,
+  input[type=range].rnd-sl::-webkit-slider-thumb,
+  input[type=range].cd-sl::-webkit-slider-thumb{width:26px;height:26px;}
+
+  .btm{padding:12px 24px 16px;}
+  .btn-go{height:66px;font-size:15px;letter-spacing:7px;}
+  .btn-sm{height:46px;font-size:13px;}
+  .stats-row{margin-top:12px;padding-top:12px;min-height:52px;}
+  .stat-v{font-size:20px;}
+  .stat-l{font-size:10px;letter-spacing:2.5px;}
+
+  .big-ring-wrap{
+    width:clamp(320px,52vmin,420px);
+    height:clamp(320px,52vmin,420px);
+  }
+  .big-time{font-size:clamp(90px,17vmin,130px);}
+  .big-eyebrow{font-size:13px;letter-spacing:5px;}
+  .big-sub{font-size:14px;margin-top:10px;}
+  .big-pips .pip{width:14px;height:14px;}
+}
+
+/* ── iPAD landscape — такий самий як portrait, без колонок ─  */
+@media (min-width:768px) and (max-width:1366px) and (orientation:landscape) and (min-height:600px){
+  body{
+    max-width:680px !important;
+    margin:0 auto !important;
+    border-left:1px solid var(--line) !important;
+    border-right:1px solid var(--line) !important;
+    /* скидаємо grid до звичайного portrait */
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    grid-template-rows:auto minmax(0,1fr) auto !important;
+    grid-template-areas:unset !important;
+  }
+  /* скидаємо display:contents назад до flex */
+  .middle{ display:flex !important; flex-direction:column !important; overflow:hidden !important; }
+  /* показуємо presets назад */
+  .presets{ display:flex !important; }
+  /* ring — звичайна колонка */
+  .ring-area{ grid-area:unset; border-right:none; padding:8px 0 6px; }
+  /* ring-wrap та шрифти керуються container queries з base CSS */
+  /* sliders — звичайний flex */
+  .sliders{
+    grid-area:unset !important;
+    height:auto !important;
+    border-right:none !important;
+    flex:0 0 auto !important;
+    justify-content:flex-start !important;
+    padding:4px 24px 8px !important;
+    gap:4px !important;
+  }
+  .sl-row{ flex:none !important; padding:8px 14px 16px !important; }
+  /* btm — звичайний */
+  .btm{
+    grid-area:unset !important;
+    display:block !important;
+    height:auto !important;
+    padding:10px 24px 14px !important;
+  }
+  .btn-go{ height:58px !important; }
+  .btn-sm{ height:42px !important; }
+  .sub-row{ margin-top:7px !important; }
+  .stats-row{ margin-top:8px !important; padding-top:8px !important; min-height:44px !important; }
+  .btm::before,.btm::after{ display:block !important; }
+  .active-overlay{ position:absolute !important; grid-column:unset !important; grid-row:unset !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="flash" id="flash"></div>
+
+<!-- COMPLETE -->
+<div class="complete-overlay" id="completeScreen">
+  <div class="complete-title">COMPLETE</div>
+  <div class="complete-sub">SESSION FINISHED</div>
+  <div class="complete-stats">
+    <div class="cs"><div class="cs-v" id="cRounds">0</div><div class="cs-l">ROUNDS</div></div>
+    <div class="cs"><div class="cs-v" id="cTime">0:00</div><div class="cs-l">TOTAL</div></div>
+  </div>
+  <button class="btn-again" onclick="doAgain()">AGAIN</button>
+</div>
+
+<!-- ROW 1: NAV -->
+<div class="nav">
+  <div class="brand">CORE·SYS</div>
+  <div class="online"><div class="pulse"></div><span id="statusTxt">ONLINE</span></div>
+  <div class="theme-picker" id="themePicker">
+    <button class="tc active" data-theme="" style="background:#ff6a00" title="Fire" onclick="setTheme('',this)"></button>
+    <button class="tc" data-theme="t-matrix" style="background:#00ff41" title="Matrix" onclick="setTheme('t-matrix',this)"></button>
+    <button class="tc" data-theme="t-violet" style="background:#bf5fff" title="Violet" onclick="setTheme('t-violet',this)"></button>
+    <button class="tc" data-theme="t-pink" style="background:#ff2d78" title="Pink" onclick="setTheme('t-pink',this)"></button>
+    <button class="tc" data-theme="t-gold" style="background:#f0c040" title="Gold" onclick="setTheme('t-gold',this)"></button>
+    <button class="tc" data-theme="t-white" style="background:#e0e0e0;border:1px solid #aaa" title="White" onclick="setTheme('t-white',this)"></button>
+  </div>
+</div>
+
+<!-- ROW 2: MIDDLE (presets + ring + sliders) -->
+<div class="middle">
+
+  <!-- ACTIVE OVERLAY — fades in on top, layout below untouched -->
+  <div class="active-overlay" id="activeOverlay">
+    <div class="big-ring-wrap">
+      <svg viewBox="0 0 240 240">
+        <circle cx="120" cy="120" r="108" fill="none" stroke="#1a1a1a" stroke-width="12"/>
+        <circle id="bigArc" cx="120" cy="120" r="108" fill="none" stroke="#ff6a00" stroke-width="12"
+          stroke-linecap="butt" stroke-dasharray="678.6" stroke-dashoffset="0"
+          style="transition:stroke-dashoffset 1s linear,stroke .35s,filter .35s;filter:drop-shadow(0 0 10px rgba(255,106,0,.65))"/>
+      </svg>
+      <div class="big-ring-center">
+        <div class="big-eyebrow" id="bigEyebrow">TRAINING</div>
+        <div class="big-time" id="bigTime">1:00</div>
+        <div class="big-sub" id="bigSub">RND 1 / 8</div>
+      </div>
+    </div>
+    <div class="big-pips" id="bigPips"></div>
+  </div>
+
+  <!-- TOP SECTION: presets + ring -->
+  <div class="top-section">
+    <div class="presets">
+      <button class="ps" onclick="preset(30,15,6,this)">LIGHT</button>
+      <button class="ps on" onclick="preset(60,20,8,this)">STANDARD</button>
+      <button class="ps" onclick="preset(90,30,12,this)">INTENSE</button>
+    </div>
+
+    <div class="ring-area">
+      <div class="ring-wrap">
+      <svg viewBox="0 0 240 240">
+        <circle cx="120" cy="120" r="108" fill="none" stroke="#151515" stroke-width="11"/>
+        <circle id="arc" cx="120" cy="120" r="108" fill="none" stroke="#ff6a00" stroke-width="11"
+          stroke-linecap="butt" stroke-dasharray="678.6" stroke-dashoffset="0"
+          style="transition:stroke-dashoffset 1s linear,stroke .35s,filter .35s;filter:drop-shadow(0 0 8px rgba(255,106,0,.6))"/>
+      </svg>
+      <div class="ring-center">
+        <div class="phase-eyebrow" id="eyebrow">READY</div>
+        <div class="time-big" id="timeBig">1:00</div>
+        <div class="rnd-sub" id="rndSub">RND 0 / 8</div>
+      </div>
+    </div>
+    <div class="pips" id="pips"></div>
+  </div>
+  </div><!-- /top-section -->
+
+  <!-- SLIDERS -->
+  <div class="sliders" id="slidersEl">
+    <div class="sl-row w">
+      <div class="sl-head"><span class="sl-label">ТРЕНУВАННЯ</span><span class="sl-val w" id="wVal">1:00</span></div>
+      <input type="range" class="work-sl" id="wSl" min="10" max="180" step="5" value="60" oninput="onCfg()">
+    </div>
+    <div class="sl-row r">
+      <div class="sl-head"><span class="sl-label">ВІДПОЧИНОК</span><span class="sl-val r" id="rVal">0:20</span></div>
+      <input type="range" class="rest-sl" id="rSl" min="5" max="120" step="5" value="20" oninput="onCfg()">
+    </div>
+    <div class="sl-row n">
+      <div class="sl-head"><span class="sl-label">РАУНДІВ</span><span class="sl-val n" id="nVal">8×</span></div>
+      <input type="range" class="rnd-sl" id="nSl" min="1" max="20" step="1" value="8" oninput="onCfg()">
+    </div>
+    <div class="sl-row cd">
+      <div class="sl-head"><span class="sl-label">ВІДЛІК СТАРТУ</span><span class="sl-val cd" id="cdVal">5 СЕК</span></div>
+      <input type="range" class="cd-sl" id="cdSl" min="3" max="5" step="1" value="5" oninput="onCdCfg()">
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: BOTTOM -->
+<div class="btm">
+  <button class="btn-go" id="goBtn" onclick="handleBtn()">INITIATE</button>
+  <div class="sub-row">
+    <button class="btn-sm" onclick="doReset()">RESET</button>
+    <button class="btn-sm" id="skipBtn" style="display:none" onclick="doSkip()">SKIP</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-v" id="sDone">0</div><div class="stat-l">DONE</div></div>
+    <div class="stat"><div class="stat-v" id="sLeft">8</div><div class="stat-l">LEFT</div></div>
+    <div class="stat"><div class="stat-v" id="sTotal">8:53</div><div class="stat-l">TOTAL</div></div>
+  </div>
+</div>
+
+<!-- ADD TO HOME -->
+<div class="add-banner" id="addBanner" style="display:none">
+  <div class="add-txt">Встанови як додаток:<br><strong>Поділитись → На екран «Домівка»</strong></div>
+  <button class="add-close" onclick="dismissBanner()">✕</button>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────
+const CIRC = 2 * Math.PI * 108; // 678.6
+let cfg = {w:60, r:20, n:8, cd:5};
+// phase: 'idle' | 'counting' | 'work' | 'rest' | 'paused'
+let phase = 'idle';
+let prevPhase = 'work';
+let st = {done:0, left:60, sessionStart:null};
+let tmr = null, cdTmr = null, alertPlayed = false;
+
+// ── AUDIO ──────────────────────────────────────────────────
+const AC = (() => {
+  try { return new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return null; }
+})();
+
+function beep(f, d, t='sine', v=0.18){
+  if(!AC) return;
+  if(AC.state==='suspended') AC.resume();
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.connect(g); g.connect(AC.destination);
+  o.type=t; o.frequency.value=f;
+  g.gain.setValueAtTime(v, AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001, AC.currentTime+d);
+  o.start(); o.stop(AC.currentTime+d);
+}
+
+function sfxGo()   { beep(440,.08); setTimeout(()=>beep(660,.08),90); setTimeout(()=>beep(880,.2),190); }
+function sfxRest() { beep(880,.08); setTimeout(()=>beep(660,.08),90); setTimeout(()=>beep(440,.22),190); }
+function sfxTick() { beep(1200,.06,'square',.13); }
+function sfxWin()  { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>beep(f,.28,'sine',.18),i*120)); }
+function sfxCdTick(n){ beep(n>0?660:1200, n>0?.09:.28, 'square', n>0?.14:.25); }
+function sfxAlert(){
+  [0,200,400,600,800].forEach((t,i)=>{
+    setTimeout(()=>{beep(800+i*100,.14,'square',.22); setTimeout(()=>beep(400+i*50,.08,'sine',.1),90);},t);
+  });
+}
+
+// ── HAPTICS ────────────────────────────────────────────────
+function haptic(t='light'){
+  if(navigator.vibrate) navigator.vibrate(t==='heavy'?[0,80]:t==='medium'?30:10);
+}
+
+// ── UTILS ──────────────────────────────────────────────────
+function fmt(s){ const m=Math.floor(s/60),x=s%60; return m+':'+(x<10?'0':'')+x; }
+function calcTotal(){ return cfg.w*cfg.n + cfg.r*(cfg.n-1); }
+function flashScreen(){
+  const f=document.getElementById('flash');
+  f.classList.add('go'); setTimeout(()=>f.classList.remove('go'),130);
+}
+
+// ── RING HELPERS ───────────────────────────────────────────
+function setArc(arcId, pct, col){
+  const el = document.getElementById(arcId);
+  if(!el) return;
+  el.style.strokeDashoffset = CIRC*(1-Math.max(0,Math.min(1,pct)));
+  if(col==='blue'){
+    el.style.stroke='#00c8ff';
+    el.style.filter='drop-shadow(0 0 8px rgba(0,200,255,.65))';
+  } else if(col==='grey'){
+    el.style.stroke='#2a2a2a';
+    el.style.filter='none';
+  } else {
+    el.style.stroke='#ff6a00';
+    el.style.filter='drop-shadow(0 0 8px rgba(255,106,0,.65))';
+  }
+}
+
+function setArcs(pct, col){
+  setArc('arc', pct, col);
+  setArc('bigArc', pct, col);
+}
+
+// ── PIPS ───────────────────────────────────────────────────
+function makePips(containerId){
+  const c = document.getElementById(containerId); if(!c) return;
+  c.innerHTML='';
+  for(let i=0;i<cfg.n;i++){
+    const d=document.createElement('div'); d.className='pip';
+    if(i<st.done) d.classList.add('done');
+    else if(i===st.done && phase==='work') d.classList.add('cur');
+    else if(i===st.done && phase==='rest') d.classList.add('rest-cur');
+    c.appendChild(d);
+  }
+}
+function drawPips(){ makePips('pips'); makePips('bigPips'); }
+
+// ── ACTIVE OVERLAY ─────────────────────────────────────────
+function setActiveOverlay(on){
+  document.getElementById('activeOverlay').classList.toggle('show', on);
+}
+
+// ── SYNC BOTH RINGS ────────────────────────────────────────
+function syncBigRing(){
+  const eyeTxt = phase==='counting'?'ПРИГОТУЙСЯ'
+               : phase==='work'?'TRAINING'
+               : phase==='rest'?'REST'
+               : phase==='paused'?(prevPhase==='rest'?'REST · PAUSE':'PAUSE')
+               : 'READY';
+  const eyeCol = (phase==='rest'||(phase==='paused'&&prevPhase==='rest'))?'var(--blue)':'var(--org)';
+  const timeTxt = (phase==='work'||phase==='rest'||phase==='paused') ? fmt(st.left)
+                : phase==='counting' ? document.getElementById('bigTime').textContent
+                : fmt(cfg.w);
+  const subTxt  = phase==='work'?'RND '+(st.done+1)+' / '+cfg.n
+                : phase==='rest'?'RND '+st.done+' / '+cfg.n
+                : phase==='paused'?'RND '+(prevPhase==='work'?st.done+1:st.done)+' / '+cfg.n
+                : '';
+
+  const be = document.getElementById('bigEyebrow');
+  const bt = document.getElementById('bigTime');
+  const bs = document.getElementById('bigSub');
+  if(be){ be.textContent=eyeTxt; be.style.color=eyeCol; }
+  if(bt && phase!=='counting') bt.textContent=timeTxt;
+  if(bs) bs.textContent=subTxt;
+
+  // overlay visibility: show for counting/work/rest/paused, hide for idle
+  setActiveOverlay(phase!=='idle');
+}
+
+// ── UI ─────────────────────────────────────────────────────
+function ui(){
+  // small ring
+  const timeBig = document.getElementById('timeBig');
+  const eyebrow = document.getElementById('eyebrow');
+  const rndSub  = document.getElementById('rndSub');
+  const btn     = document.getElementById('goBtn');
+
+  if(phase==='work'){
+    setArcs(st.left/cfg.w, 'orange');
+    timeBig.textContent=fmt(st.left);
+    eyebrow.textContent='TRAINING'; eyebrow.style.color='var(--org)';
+    rndSub.textContent='RND '+(st.done+1)+' / '+cfg.n;
+  } else if(phase==='rest'){
+    setArcs(st.left/cfg.r, 'blue');
+    timeBig.textContent=fmt(st.left);
+    eyebrow.textContent='REST'; eyebrow.style.color='var(--blue)';
+    rndSub.textContent='RND '+st.done+' / '+cfg.n;
+  } else if(phase==='paused'){
+    eyebrow.textContent='PAUSED'; eyebrow.style.color='#ffcc00';
+  } else if(phase==='idle'){
+    setArcs(1,'orange');
+    timeBig.textContent=fmt(cfg.w);
+    eyebrow.textContent='READY'; eyebrow.style.color='var(--org)';
+    rndSub.textContent='RND 0 / '+cfg.n;
+  }
+  // counting handled in show()
+
+  // button
+  btn.className='btn-go';
+  if(phase==='counting'){ btn.classList.add('counting'); btn.textContent='...'; }
+  else if(phase==='work'){ btn.classList.add('running'); btn.textContent='PAUSE'; }
+  else if(phase==='rest'){ btn.classList.add('resting'); btn.textContent='PAUSE'; }
+  else if(phase==='paused'){ btn.classList.add('paused'); btn.textContent='RESUME'; }
+  else { btn.textContent='INITIATE'; }
+
+  document.getElementById('skipBtn').style.display=(phase==='work'||phase==='rest')?'block':'none';
+  document.getElementById('sDone').textContent=st.done;
+  document.getElementById('sLeft').textContent=cfg.n-st.done;
+  document.getElementById('sTotal').textContent=fmt(calcTotal());
+
+  syncBigRing();
+  drawPips();
+}
+
+// ── COUNTDOWN ──────────────────────────────────────────────
+function startCountdown(){
+  if(AC&&AC.state==='suspended') AC.resume();
+  phase='counting';
+  ui();
+
+  let count = cfg.cd;
+  const bt = document.getElementById('bigTime');
+  const be = document.getElementById('bigEyebrow');
+  const bs = document.getElementById('bigSub');
+
+  function show(n){
+    if(be){ be.textContent='ПРИГОТУЙСЯ'; be.style.color='var(--org)'; }
+    if(bt) bt.textContent = n>0 ? String(n) : 'GO!';
+    if(bs) bs.textContent = '';
+    setArc('bigArc', n/cfg.cd, 'orange');
+    // also update small ring
+    const tb=document.getElementById('timeBig');
+    const ey=document.getElementById('eyebrow');
+    if(tb) tb.textContent = n>0 ? String(n) : 'GO!';
+    if(ey){ ey.textContent='ПРИГОТУЙСЯ'; ey.style.color='var(--org)'; }
+    setArc('arc', n/cfg.cd, 'orange');
+    sfxCdTick(n); haptic(n>0?'light':'heavy');
+  }
+
+  show(count);
+  cdTmr = setInterval(()=>{
+    count--;
+    if(count >= 0){
+      show(count);
+    } else {
+      clearInterval(cdTmr); cdTmr=null;
+      phase='work'; st.done=0; st.left=cfg.w;
+      st.sessionStart=Date.now(); alertPlayed=false;
+      sfxGo(); haptic('medium');
+      tmr=setInterval(tick,1000);
+      ui();
+    }
+  }, 900);
+}
+
+// ── TICK ───────────────────────────────────────────────────
+function tick(){
+  st.left--;
+  if(st.left===10 && !alertPlayed){ alertPlayed=true; sfxAlert(); }
+  if(st.left<=3 && st.left>0){ sfxTick(); haptic('light'); }
+
+  if(st.left<=0){
+    flashScreen();
+    if(phase==='work'){
+      st.done++;
+      if(st.done>=cfg.n){
+        clearInterval(tmr); tmr=null;
+        phase='idle'; sfxWin(); haptic('heavy');
+        setArcs(1,'orange'); drawPips();
+        const elapsed = st.sessionStart ? Math.round((Date.now()-st.sessionStart)/1000) : calcTotal();
+        document.getElementById('cRounds').textContent=st.done;
+        document.getElementById('cTime').textContent=fmt(elapsed);
+        document.getElementById('completeScreen').classList.add('show');
+        return;
+      }
+      phase='rest'; st.left=cfg.r; alertPlayed=false;
+      sfxRest(); haptic('medium');
+    } else {
+      phase='work'; st.left=cfg.w; alertPlayed=false;
+      sfxGo(); haptic('medium');
+    }
+  }
+  ui();
+}
+
+// ── BUTTON ─────────────────────────────────────────────────
+function handleBtn(){
+  if(AC&&AC.state==='suspended') AC.resume();
+  if(phase==='counting') return;
+
+  if(phase==='idle'){
+    startCountdown();
+  } else if(phase==='work'||phase==='rest'){
+    prevPhase=phase;
+    clearInterval(tmr); tmr=null;
+    phase='paused';
+    haptic('light'); ui();
+  } else if(phase==='paused'){
+    phase=prevPhase;
+    sfxGo(); haptic('light');
+    tmr=setInterval(tick,1000); ui();
+  }
+}
+
+function doSkip(){
+  if(phase!=='work'&&phase!=='rest') return;
+  clearInterval(tmr); tmr=null; flashScreen();
+  if(phase==='work'){
+    st.done++;
+    if(st.done>=cfg.n){ phase='idle'; sfxWin(); ui(); return; }
+    phase='rest'; st.left=cfg.r; alertPlayed=false;
+  } else {
+    phase='work'; st.left=cfg.w; alertPlayed=false;
+  }
+  sfxGo(); haptic('medium');
+  tmr=setInterval(tick,1000); ui();
+}
+
+function doReset(){
+  clearInterval(tmr); tmr=null;
+  clearInterval(cdTmr); cdTmr=null;
+  phase='idle';
+  st={done:0, left:cfg.w, sessionStart:null}; alertPlayed=false;
+  setArcs(1,'orange');
+  beep(220,.1); haptic('light');
+  ui();
+}
+
+function doAgain(){
+  document.getElementById('completeScreen').classList.remove('show');
+  doReset();
+}
+
+// ── SLIDERS ────────────────────────────────────────────────
+function onCfg(){
+  cfg.w=+document.getElementById('wSl').value;
+  cfg.r=+document.getElementById('rSl').value;
+  cfg.n=+document.getElementById('nSl').value;
+  document.getElementById('wVal').textContent=fmt(cfg.w);
+  document.getElementById('rVal').textContent=fmt(cfg.r);
+  document.getElementById('nVal').textContent=cfg.n+'×';
+  if(phase==='idle') st.left=cfg.w;
+  ui();
+}
+function onCdCfg(){
+  cfg.cd=+document.getElementById('cdSl').value;
+  document.getElementById('cdVal').textContent=cfg.cd+' СЕК';
+}
+function preset(w,r,n,el){
+  document.querySelectorAll('.ps').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  cfg.w=w; cfg.r=r; cfg.n=n;
+  document.getElementById('wSl').value=w;
+  document.getElementById('rSl').value=r;
+  document.getElementById('nSl').value=n;
+  onCfg(); doReset();
+}
+
+// ── THEMES ─────────────────────────────────────────────────
+const THEME_BG = {
+  '':        '#080808',
+  't-matrix':'#020b02',
+  't-violet':'#08020e',
+  't-pink':  '#0a0008',
+  't-gold':  '#090700',
+  't-white': '#f8f8f6',
+};
+
+function setTheme(theme, el){
+  // remove all theme classes
+  document.body.classList.remove('t-matrix','t-violet','t-pink','t-gold','t-white');
+  if(theme) document.body.classList.add(theme);
+  const bg = THEME_BG[theme] || '#080808';
+  document.documentElement.style.background = bg;
+  document.querySelector('meta[name="theme-color"]').content = bg;
+  // update active dot
+  document.querySelectorAll('.tc').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  localStorage.setItem('coresys_theme', theme);
+  beep(550,.05,'sine',.08);
+}
+
+(function initTheme(){
+  const saved = localStorage.getItem('coresys_theme') || '';
+  const dot = document.querySelector(`.tc[data-theme="${saved}"]`);
+  setTheme(saved, dot);
+})();
+
+
+// ── WAKE LOCK ──────────────────────────────────────────────
+let wakeLock=null;
+async function requestWakeLock(){
+  try{ if('wakeLock'in navigator) wakeLock=await navigator.wakeLock.request('screen'); }catch(e){}
+}
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'&&(phase==='work'||phase==='rest')) await requestWakeLock();
+});
+
+// ── ADD TO HOME ────────────────────────────────────────────
+function dismissBanner(){
+  document.getElementById('addBanner').style.display='none';
+  localStorage.setItem('coresys_banner','1');
+}
+if(/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone && !localStorage.getItem('coresys_banner')){
+  setTimeout(()=>{ document.getElementById('addBanner').style.display='flex'; }, 3500);
+}
+
+// ── INIT ───────────────────────────────────────────────────
+requestWakeLock();
+ui();
+</script>
+</body>
+</html>
