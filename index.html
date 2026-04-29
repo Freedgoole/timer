@@ -154,6 +154,62 @@ body.t-white::before{background:repeating-linear-gradient(0deg,transparent,trans
 .lang-btn{background:transparent;border:1px solid var(--line);border-radius:3px;color:var(--txt);font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;padding:2px 6px;cursor:pointer;transition:all .18s;margin-right:4px;}
 .lang-btn:active{background:var(--org);color:var(--bg);border-color:var(--org);}
 
+/* ── MENU BUTTON ──────────────────────────────────────────── */
+.menu-btn{background:transparent;border:none;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px 2px 8px 12px;justify-self:end;}
+.menu-btn span{display:block;width:18px;height:2px;background:var(--org);border-radius:1px;transition:background .18s;}
+.menu-btn:active span{background:var(--txt2);}
+
+/* ── SETTINGS PANEL ──────────────────────────────────────── */
+.menu-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s;z-index:185;}
+.menu-backdrop.open{opacity:1;pointer-events:all;}
+.menu-panel{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(280px,80vw);
+  background:var(--bg2);border-left:1px solid var(--line);
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  z-index:186;
+  display:flex;flex-direction:column;
+  padding-top:var(--si);padding-bottom:var(--sb);
+}
+.menu-panel.open{transform:translateX(0);}
+.menu-hdr{display:flex;justify-content:space-between;align-items:center;padding:0 20px;height:52px;border-bottom:1px solid var(--line);flex-shrink:0;}
+.menu-hdr-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--org);}
+.menu-x{background:transparent;border:none;cursor:pointer;color:var(--txt2);font-size:16px;padding:6px 8px;line-height:1;transition:color .18s;}
+.menu-x:active{color:var(--org);}
+.menu-body{padding:28px 20px;display:flex;flex-direction:column;gap:32px;overflow-y:auto;flex:1;}
+.menu-sec-lbl{font-size:9px;font-weight:700;letter-spacing:3px;color:var(--txt3);text-transform:uppercase;margin-bottom:12px;}
+.menu-lang-btn{
+  width:100%;background:var(--bg3);border:1px solid var(--line);border-radius:4px;
+  color:var(--txt);font-family:'Rajdhani',sans-serif;
+  font-size:12px;font-weight:700;letter-spacing:2px;
+  padding:14px 16px;cursor:pointer;text-align:left;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:all .18s;
+}
+.menu-lang-btn:active{background:var(--org);color:var(--bg);border-color:var(--org);}
+.menu-lang-val{font-family:'Orbitron',sans-serif;font-size:14px;color:var(--org);transition:color .18s;}
+.menu-lang-btn:active .menu-lang-val{color:var(--bg);}
+.menu-theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.menu-panel .tc{
+  width:auto;height:auto;border-radius:6px;
+  border:1px solid var(--line);background:var(--bg3);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:14px 8px;cursor:pointer;
+  transition:border-color .2s,background .15s;
+}
+.menu-panel .tc.active{border-color:var(--org);}
+.menu-panel .tc:active{background:var(--bg);}
+.menu-tc-dot{width:20px;height:20px;border-radius:50%;border:2px solid transparent;pointer-events:none;transition:border-color .2s;}
+.menu-panel .tc.active .menu-tc-dot{border-color:rgba(255,255,255,.5);}
+.menu-tc-name{font-size:8px;font-weight:700;letter-spacing:2px;color:var(--txt2);text-transform:uppercase;pointer-events:none;transition:color .2s;}
+.menu-panel .tc.active .menu-tc-name{color:var(--org);}
+.menu-vol-row{display:flex;flex-direction:column;gap:10px;}
+.menu-vol-head{display:flex;justify-content:space-between;align-items:baseline;}
+.menu-vol-val{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--org);}
+.menu-vol-sl{-webkit-appearance:none;appearance:none;width:100%;height:5px;background:var(--bg3);border-radius:3px;outline:none;cursor:pointer;}
+.menu-vol-sl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:3px;transform:rotate(45deg);background:var(--org);border:none;box-shadow:0 0 8px var(--org-glow);}
+
 /* ── MIDDLE — holds presets + ring + sliders ──────────────  */
 .middle{
   position:relative;
@@ -542,6 +598,63 @@ body.light .btn-go.paused{color:#8a6200;border-color:#8a6200;}
 
 <div class="flash" id="flash"></div>
 
+<!-- SETTINGS PANEL -->
+<div class="menu-backdrop" id="menuBackdrop" onclick="closeMenu()"></div>
+<div class="menu-panel" id="menuPanel">
+  <div class="menu-hdr">
+    <span class="menu-hdr-title">SETTINGS</span>
+    <button class="menu-x" onclick="closeMenu()">✕</button>
+  </div>
+  <div class="menu-body">
+    <div>
+      <div class="menu-sec-lbl">LANGUAGE</div>
+      <button class="menu-lang-btn" onclick="toggleLang()">
+        <span>МОВА / LANGUAGE</span>
+        <span class="menu-lang-val" id="langBtn">EN</span>
+      </button>
+    </div>
+    <div>
+      <div class="menu-sec-lbl">VOLUME</div>
+      <div class="menu-vol-row">
+        <div class="menu-vol-head">
+          <span>SOUND</span>
+          <span class="menu-vol-val" id="volVal">100%</span>
+        </div>
+        <input type="range" class="menu-vol-sl" id="volSl" min="0" max="1" step="0.05" value="1" oninput="setVol(+this.value)">
+      </div>
+    </div>
+    <div>
+      <div class="menu-sec-lbl">THEME</div>
+      <div class="menu-theme-grid">
+        <button class="tc active" data-theme="" onclick="setTheme('',this)">
+          <span class="menu-tc-dot" style="background:#ff6a00"></span>
+          <span class="menu-tc-name">FIRE</span>
+        </button>
+        <button class="tc" data-theme="t-matrix" onclick="setTheme('t-matrix',this)">
+          <span class="menu-tc-dot" style="background:#00ff41"></span>
+          <span class="menu-tc-name">MATRIX</span>
+        </button>
+        <button class="tc" data-theme="t-violet" onclick="setTheme('t-violet',this)">
+          <span class="menu-tc-dot" style="background:#bf5fff"></span>
+          <span class="menu-tc-name">VIOLET</span>
+        </button>
+        <button class="tc" data-theme="t-pink" onclick="setTheme('t-pink',this)">
+          <span class="menu-tc-dot" style="background:#ff2d78"></span>
+          <span class="menu-tc-name">PINK</span>
+        </button>
+        <button class="tc" data-theme="t-gold" onclick="setTheme('t-gold',this)">
+          <span class="menu-tc-dot" style="background:#f0c040"></span>
+          <span class="menu-tc-name">GOLD</span>
+        </button>
+        <button class="tc" data-theme="t-white" onclick="setTheme('t-white',this)">
+          <span class="menu-tc-dot" style="background:#e0e0e0;border-color:#aaa"></span>
+          <span class="menu-tc-name">WHITE</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- COMPLETE -->
 <div class="complete-overlay" id="completeScreen">
   <div class="complete-title" id="completeTitle">COMPLETE</div>
@@ -557,15 +670,9 @@ body.light .btn-go.paused{color:#8a6200;border-color:#8a6200;}
 <div class="nav">
   <div class="brand">CORE·SYS</div>
   <div class="online"><div class="pulse"></div><span id="statusTxt">ONLINE</span></div>
-  <div class="theme-picker" id="themePicker">
-    <button class="lang-btn" id="langBtn" onclick="toggleLang()">EN</button>
-    <button class="tc active" data-theme="" style="background:#ff6a00" title="Fire" onclick="setTheme('',this)"></button>
-    <button class="tc" data-theme="t-matrix" style="background:#00ff41" title="Matrix" onclick="setTheme('t-matrix',this)"></button>
-    <button class="tc" data-theme="t-violet" style="background:#bf5fff" title="Violet" onclick="setTheme('t-violet',this)"></button>
-    <button class="tc" data-theme="t-pink" style="background:#ff2d78" title="Pink" onclick="setTheme('t-pink',this)"></button>
-    <button class="tc" data-theme="t-gold" style="background:#f0c040" title="Gold" onclick="setTheme('t-gold',this)"></button>
-    <button class="tc" data-theme="t-white" style="background:#e0e0e0;border:1px solid #aaa" title="White" onclick="setTheme('t-white',this)"></button>
-  </div>
+  <button class="menu-btn" onclick="openMenu()" aria-label="Settings">
+    <span></span><span></span><span></span>
+  </button>
 </div>
 
 <!-- ROW 2: MIDDLE (presets + ring + sliders) -->
@@ -668,7 +775,8 @@ let cfg = {w:60, r:20, n:8, cd:5};
 let phase = 'idle';
 let prevPhase = 'work';
 let st = {done:0, left:60, sessionStart:null};
-let tmr = null, cdTmr = null, alertPlayed = false;
+let tmr = null, cdTmr = null;
+let volMult = 1.0;
 
 // ── AUDIO ──────────────────────────────────────────────────
 const AC = (() => {
@@ -681,21 +789,35 @@ function beep(f, d, t='sine', v=0.18){
   const o=AC.createOscillator(), g=AC.createGain();
   o.connect(g); g.connect(AC.destination);
   o.type=t; o.frequency.value=f;
-  g.gain.setValueAtTime(v, AC.currentTime);
+  g.gain.setValueAtTime(v * volMult, AC.currentTime);
   g.gain.exponentialRampToValueAtTime(.001, AC.currentTime+d);
   o.start(); o.stop(AC.currentTime+d);
 }
 
-function sfxGo()   { beep(440,.08); setTimeout(()=>beep(660,.08),90); setTimeout(()=>beep(880,.2),190); }
-function sfxRest() { beep(880,.08); setTimeout(()=>beep(660,.08),90); setTimeout(()=>beep(440,.22),190); }
-function sfxTick() { beep(1200,.06,'square',.13); }
+// work start: 3 punchy square attacks → long sustained sine (energetic)
+function sfxGo(){
+  beep(440,.06,'square',.15);
+  setTimeout(()=>beep(660,.06,'square',.17), 80);
+  setTimeout(()=>beep(880,.45,'sine',.2), 170);
+}
+// rest start: slow descending sine tones (calming)
+function sfxRest(){
+  beep(880,.2,'sine',.14);
+  setTimeout(()=>beep(659,.2,'sine',.13), 250);
+  setTimeout(()=>beep(494,.38,'sine',.11), 500);
+}
+// work-phase countdown (5→1 sec left): sharp double click — mechanical/urgent
+function sfxWorkTick(){
+  beep(1100,.05,'square',.14);
+  setTimeout(()=>beep(1400,.04,'square',.1), 70);
+}
+// rest-phase countdown (5→1 sec left): rising double sine — "get ready"
+function sfxRestTick(){
+  beep(660,.07,'sine',.1);
+  setTimeout(()=>beep(880,.07,'sine',.13), 105);
+}
 function sfxWin()  { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>beep(f,.28,'sine',.18),i*120)); }
 function sfxCdTick(n){ beep(n>0?660:1200, n>0?.09:.28, 'square', n>0?.14:.25); }
-function sfxAlert(){
-  [0,200,400,600,800].forEach((t,i)=>{
-    setTimeout(()=>{beep(800+i*100,.14,'square',.22); setTimeout(()=>beep(400+i*50,.08,'sine',.1),90);},t);
-  });
-}
 
 // ── HAPTICS ────────────────────────────────────────────────
 function haptic(t='light'){
@@ -879,7 +1001,7 @@ function startCountdown(){
     } else {
       clearInterval(cdTmr); cdTmr=null;
       phase='work'; st.done=0; st.left=cfg.w;
-      st.sessionStart=Date.now(); alertPlayed=false;
+      st.sessionStart=Date.now();
       sfxGo(); haptic('medium');
       tmr=setInterval(tick,1000);
       ui();
@@ -890,8 +1012,10 @@ function startCountdown(){
 // ── TICK ───────────────────────────────────────────────────
 function tick(){
   st.left--;
-  if(st.left===10 && !alertPlayed){ alertPlayed=true; sfxAlert(); }
-  if(st.left<=3 && st.left>0){ sfxTick(); haptic('light'); }
+  if(st.left<=5 && st.left>0){
+    if(phase==='work'){ sfxWorkTick(); } else { sfxRestTick(); }
+    haptic('light');
+  }
 
   if(st.left<=0){
     flashScreen();
@@ -907,10 +1031,10 @@ function tick(){
         document.getElementById('completeScreen').classList.add('show');
         return;
       }
-      phase='rest'; st.left=cfg.r; alertPlayed=false;
+      phase='rest'; st.left=cfg.r;
       sfxRest(); haptic('medium');
     } else {
-      phase='work'; st.left=cfg.w; alertPlayed=false;
+      phase='work'; st.left=cfg.w;
       sfxGo(); haptic('medium');
     }
   }
@@ -942,11 +1066,12 @@ function doSkip(){
   if(phase==='work'){
     st.done++;
     if(st.done>=cfg.n){ phase='idle'; sfxWin(); ui(); return; }
-    phase='rest'; st.left=cfg.r; alertPlayed=false;
+    phase='rest'; st.left=cfg.r;
+    sfxRest(); haptic('medium');
   } else {
-    phase='work'; st.left=cfg.w; alertPlayed=false;
+    phase='work'; st.left=cfg.w;
+    sfxGo(); haptic('medium');
   }
-  sfxGo(); haptic('medium');
   tmr=setInterval(tick,1000); ui();
 }
 
@@ -954,7 +1079,7 @@ function doReset(){
   clearInterval(tmr); tmr=null;
   clearInterval(cdTmr); cdTmr=null;
   phase='idle';
-  st={done:0, left:cfg.w, sessionStart:null}; alertPlayed=false;
+  st={done:0, left:cfg.w, sessionStart:null};
   setArcs(1,'orange');
   beep(220,.1); haptic('light');
   ui();
@@ -971,7 +1096,7 @@ function updateSliderFills(){
   const org  = cs.getPropertyValue('--org').trim();
   const blue = cs.getPropertyValue('--blue').trim();
   const bg3  = cs.getPropertyValue('--bg3').trim();
-  [{id:'wSl',color:org},{id:'rSl',color:blue},{id:'nSl',color:'#555'},{id:'cdSl',color:'#777'}]
+  [{id:'wSl',color:org},{id:'rSl',color:blue},{id:'nSl',color:'#555'},{id:'cdSl',color:'#777'},{id:'volSl',color:org}]
   .forEach(({id,color})=>{
     const el=document.getElementById(id);
     if(!el)return;
@@ -1061,6 +1186,32 @@ function setLang(l){
   ui();
 }
 function toggleLang(){ setLang(lang==='uk'?'en':'uk'); }
+
+// ── VOLUME ─────────────────────────────────────────────────
+function setVol(v){
+  volMult = v;
+  localStorage.setItem('coresys_vol', v);
+  document.getElementById('volVal').textContent = Math.round(v * 100) + '%';
+  updateSliderFills();
+}
+(function initVol(){
+  const saved = parseFloat(localStorage.getItem('coresys_vol'));
+  if(!isNaN(saved)){
+    volMult = saved;
+    document.getElementById('volSl').value = saved;
+    document.getElementById('volVal').textContent = Math.round(saved * 100) + '%';
+  }
+})();
+
+// ── SETTINGS MENU ──────────────────────────────────────────
+function openMenu(){
+  document.getElementById('menuPanel').classList.add('open');
+  document.getElementById('menuBackdrop').classList.add('open');
+}
+function closeMenu(){
+  document.getElementById('menuPanel').classList.remove('open');
+  document.getElementById('menuBackdrop').classList.remove('open');
+}
 
 // ── THEMES ─────────────────────────────────────────────────
 const THEME_BG = {
